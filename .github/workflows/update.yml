@@ -1,0 +1,32 @@
+name: Update Configs
+
+on:
+  schedule:
+    - cron: "0 */23 * * *" 
+  workflow_dispatch: # دکمه اجرای دستی در تب Actions
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4  # این خط بسیار حیاتی است
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Run script
+        run: python config_generator.py # نام فایل باید دقیقاً همین باشد
+
+      - name: Commit and Push
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add *.txt
+          git commit -m "Update nodes" || exit 0
+          git push
